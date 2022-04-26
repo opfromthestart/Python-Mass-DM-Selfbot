@@ -36,6 +36,10 @@ if data is not None and "ignoreRoles" in data.keys():
     ignores = data["ignoreRoles"]
 else:
     ignores = []
+if data is not None and "onlyRoles" in data.keys():
+    roles = data["onlyRoles"]
+else:
+    roles = None
 
 
 @bot.gateway.command
@@ -50,17 +54,23 @@ def memberTest(resp):
 
 bot.gateway.run()
 badMemberz = set()
+onlyMemberz = set()
 print("Getting members not to message")
 for role in ignores:
     for mem in bot.getRoleMemberIDs(guildz, role).json():
         badMemberz.add(mem)
-print(badMemberz)
+for role in roles:
+    for mem in bot.getRoleMemberIDs(guildz, role).json():
+        onlyMemberz.add(mem)
 print("Starting add members.")
 for memberID in bot.gateway.session.guild(guildz).members:
-    if memberID in badMemberz:
-        continue
     memberz.append(memberID)
-print("Starting to DM.")
+for mem in memberz:
+    if mem in badMemberz:
+        memberz.remove(mem)
+    if roles is not None and mem not in onlyMemberz:
+        memberz.remove(mem)
+print("Starting to DM. Members:", len(memberz))
 for x in memberz:
     try:
         rand = random.randint(0, 20)
