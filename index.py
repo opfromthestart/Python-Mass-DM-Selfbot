@@ -64,13 +64,17 @@ for role in roles:
         onlyMemberz.add(mem)
 print("Starting add members.")
 for memberID in bot.gateway.session.guild(guildz).members:
-    memberz.append(memberID)
+    if roles is None:
+        memberz.append(memberID)
+    elif memberID in onlyMemberz:
+        memberz.append(memberID)
 for mem in memberz:
     if mem in badMemberz:
         memberz.remove(mem)
-    if roles is not None and mem not in onlyMemberz:
-        memberz.remove(mem)
 print("Starting to DM. Members:", len(memberz))
+abort = input("abort?")
+if abort != "no":
+    exit(1)
 for x in memberz:
     try:
         rand = random.randint(0, 20)
